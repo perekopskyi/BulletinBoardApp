@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# Bulletin Board App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is project creacted by Yevhenii Perekopskyi was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 

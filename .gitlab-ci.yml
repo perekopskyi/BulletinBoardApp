@@ -1,0 +1,60 @@
+image: node:8
+
+variables:
+  REACT_APP_ENV_NAME: $CI_ENVIRONMENT_NAME
+
+stages:
+  - setup
+  - code_quality
+  - testing
+  - semver
+  - deployment
+
+dependencies:installation:
+  stage: setup
+  cache:
+    paths:
+      - node_modules/
+  script:
+    - yarn --prefer-offline --no-progress --non-interactive --frozen-lockfile
+  tags:
+    - web-ci
+
+lint:scripts:
+  stage: code_quality
+  cache:
+    paths:
+      - node_modules/
+  script:
+    - yarn run lint:scripts:check --max-warnings 0
+  only:
+    changes:
+      - src/**/*.{ts,tsx}
+  tags:
+    - web-ci
+
+lint:styles:
+  stage: code_quality
+  cache:
+    paths:
+      - node_modules/
+  script:
+    - yarn run lint:styles:check
+  only:
+    changes:
+      - src/**/*.{css,scss}
+  tags:
+    - web-ci
+
+unit:testing:
+  stage: testing
+  cache:
+    paths:
+      - node_modules/
+  only:
+    changes:
+      - src/**/*.{ts,tsx}
+  script:
+    - yarn test
+  tags:
+    - web-ci
