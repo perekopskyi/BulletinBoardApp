@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { LOCAL_STORAGE } from '../shared/constants'
 
-// the same as on BE
 interface LoginStatus {
   username: string
   expiresIn: string
@@ -17,9 +16,8 @@ export const getAuthDataFromLS = () => {
 
 export const Axios = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
-  headers: {
-    Authorization: 'Bearer ' + getAuthDataFromLS()?.accessToken,
-  },
+  headers: {},
+  withCredentials: true,
 })
 
 export const submitToApi = async ({
@@ -29,9 +27,15 @@ export const submitToApi = async ({
   params,
 }: any) => {
   try {
-    const response = await Axios({ method, url, data, params })
+    const response = await Axios({
+      method,
+      url,
+      data,
+      params,
+    })
     return response.data
   } catch (error: any) {
+    console.error('submitToApi: ', { error })
     const message = error?.response.data.message || error?.message
     throw new Error(message).message
   }
