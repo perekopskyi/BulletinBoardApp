@@ -10,14 +10,11 @@ import { useAuth } from '../../shared/useAuth'
 const { Title } = Typography
 
 export const Posts: React.FC = () => {
-  const auth = useAuth()
-  const {
-    loggedIn: {
-      user: { id },
-    },
-  } = auth
-  const { data, error, isLoading } = useQuery(['posts', id], () =>
-    getPostsByUserId(id)
+  const { loggedIn } = useAuth()
+
+  const { data, error, isLoading } = useQuery(
+    ['posts', loggedIn?.user?.id],
+    () => getPostsByUserId(loggedIn.user.id)
   )
 
   if (isLoading) return <Loader />

@@ -10,16 +10,17 @@ import { useAuth } from '../../shared/useAuth'
 
 export const Profile = () => {
   const [touched, setTouched] = useState(false)
-  const auth = useAuth()
   const {
     loggedIn: {
       user: { id },
     },
-  } = auth
+  } = useAuth()
+
   const {
     data = {},
     error,
     isLoading,
+    isFetched,
   } = useQuery(['user', id], () => getUser(id), {})
 
   const {
@@ -41,6 +42,10 @@ export const Profile = () => {
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
+  }
+
+  if (isFetched && error) {
+    return <Alert message={`${error}`} type="error" />
   }
 
   if (isLoading) return <Loader />

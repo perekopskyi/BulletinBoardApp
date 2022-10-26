@@ -56,17 +56,11 @@ export const EditSinglePost: React.FC = () => {
     if (createPostData) navigate(`/${ROUTES.POSTS}/${createPostData.id}`)
   }, [createPostData])
 
-  const onFieldsChange = (props: any) => {
-    setTouched(true)
-  }
+  const onFieldsChange = () => setTouched(true)
 
   const onFinish = (values: any) => {
     console.log('onFinish form:', values)
     isNewPost ? createPostMutate(values) : updatePostMutate(values)
-  }
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
   }
 
   const onRemovePost = () => {
@@ -115,7 +109,6 @@ export const EditSinglePost: React.FC = () => {
         wrapperCol={{ span: 16 }}
         initialValues={{ text: data.text, title: data.title }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
         onFieldsChange={onFieldsChange}
       >

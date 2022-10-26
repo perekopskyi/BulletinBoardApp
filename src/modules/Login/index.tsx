@@ -1,9 +1,11 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Alert, Checkbox, Form, Input, Typography } from 'antd'
 import { AuthContext } from '../Auth/AuthProvider'
 import { Loader } from '../../components/Loader'
 import Button from '../../components/Button'
-import { loginOauth } from '../../api/auth'
+import { LOCAL_STORAGE } from '../../shared/constants'
+import { GoogleLoginButton } from './GoogleLogin'
 
 const { Title } = Typography
 
@@ -14,6 +16,17 @@ type Inputs = {
 
 export const Login = () => {
   const { authError, onLogin, isLoginLoading }: any = useContext(AuthContext)
+  const navigate = useNavigate()
+  const location: any = useLocation()
+
+  const loggedIn = localStorage.getItem(LOCAL_STORAGE.loggedIn)
+
+  useEffect(() => {
+    if (loggedIn) {
+      const origin = location.state?.from?.pathname || '/'
+      navigate(origin)
+    }
+  }, [loggedIn])
 
   const onFinish = (values: Inputs) => {
     console.log('Success:', values)
@@ -75,9 +88,7 @@ export const Login = () => {
       </Form>
       {authError ? <Alert message={`${authError}`} type="error" /> : null}
       Try with:
-      <Button disabled onClick={loginOauth}>
-        OAUTH
-      </Button>
+      <GoogleLoginButton />
     </div>
   )
 }

@@ -3,6 +3,19 @@ import { submitToApi } from './axios.config'
 
 export type LoginBody = { username: string; password: string }
 
+export const logout = async (data: any) => {
+  try {
+    await submitToApi({
+      method: 'post',
+      url: '/auth/logout',
+      data,
+    })
+  } catch (error: any) {
+    console.error(error)
+    throw new Error(error)
+  }
+}
+
 export const login = async (data: LoginBody) => {
   try {
     const response = await submitToApi({
@@ -10,7 +23,10 @@ export const login = async (data: LoginBody) => {
       url: '/auth/login',
       data,
     })
-    localStorage.setItem(LOCAL_STORAGE.loggedIn, JSON.stringify(response))
+    localStorage.setItem(
+      LOCAL_STORAGE.loggedIn,
+      JSON.stringify({ user: response })
+    )
     return response
   } catch (error: any) {
     console.error(error)
@@ -34,17 +50,3 @@ export const register = (body: RegistrationBody) =>
       updatedBy: '',
     },
   })
-
-// TODO
-export const loginOauth = async () => {
-  try {
-    const response = await submitToApi({
-      url: '/auth/oauth2',
-    })
-    console.log('🚀 ~> loginOauth', response)
-    return response
-  } catch (error: any) {
-    console.error('loginOauth', error)
-    throw new Error(error)
-  }
-}

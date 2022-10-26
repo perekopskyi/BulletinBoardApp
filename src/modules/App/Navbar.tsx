@@ -4,34 +4,47 @@ import { Button } from 'antd'
 import { useAuth } from '../../shared/useAuth'
 import { ROUTES } from './routes'
 
-const UserNavbar = ({ dashboardLink, onLogout }: any) => (
-  <>
-    {dashboardLink && (
-      <NavLink to={ROUTES.DASHBOARD} className="mx-2">
-        Dashboard
+const UserNavbar = ({ dashboardLink, onLogout }: any) => {
+  const {
+    loggedIn: { user },
+  }: any = useAuth()
+
+  const name =
+    user?.firstName && user?.lastName
+      ? `${user?.firstName} ${user?.lastName}`
+      : user?.username
+
+  return (
+    <>
+      <span style={{ marginRight: 30 }}>Hi! {name}</span>
+
+      {dashboardLink && (
+        <NavLink to={ROUTES.DASHBOARD} className="mx-2">
+          Dashboard
+        </NavLink>
+      )}
+      <NavLink className="mx-2" to={ROUTES.ABOUT}>
+        About
       </NavLink>
-    )}
-    <NavLink className="mx-2" to={ROUTES.ABOUT}>
-      About
-    </NavLink>
-    <NavLink className="mx-2" to={ROUTES.POSTS}>
-      Posts
-    </NavLink>
-    <NavLink className="mx-2" to={ROUTES.PROFILE}>
-      Profile
-    </NavLink>
-    <Button className="mx-2" type="primary" onClick={onLogout}>
-      Logout
-    </Button>
-  </>
-)
+      <NavLink className="mx-2" to={ROUTES.POSTS}>
+        Your Posts
+      </NavLink>
+      <NavLink className="mx-2" to={ROUTES.PROFILE}>
+        Profile
+      </NavLink>
+      <Button className="mx-2" type="primary" onClick={onLogout}>
+        Logout
+      </Button>
+    </>
+  )
+}
 
 export const Navbar = () => {
-  const { loggedIn, token, onLogout }: any = useAuth()
+  const { loggedIn, onLogout }: any = useAuth()
 
   return (
     <nav className="text-white">
-      {token ? (
+      {loggedIn ? (
         <UserNavbar
           {...{ dashboardLink: loggedIn?.user?.username === 'admin', onLogout }}
         />

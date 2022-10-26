@@ -4,10 +4,10 @@ import { useAuth } from '../../shared/useAuth'
 import { ROUTES } from '../App/routes'
 
 export const ProtectedRoute = ({ children }: any) => {
-  const { token }: any = useAuth()
+  const { loggedIn }: any = useAuth()
   const location = useLocation()
 
-  if (!token)
+  if (!loggedIn)
     return (
       <Navigate to={`/${ROUTES.LOGIN}`} replace state={{ from: location }} />
     )
