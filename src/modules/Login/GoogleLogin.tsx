@@ -1,15 +1,18 @@
+import { Alert } from 'antd'
 import React, { useState } from 'react'
 import { GoogleLogin, GoogleLogout } from 'react-google-login'
-import { getConfig } from '../../config'
+import { Loader } from '../../components/Loader'
 import { LOCAL_STORAGE } from '../../shared/constants'
 import history from '../../shared/history'
 import useGoogleAuthentication from '../Auth/useGoogleAuth'
 
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_AUTH0_CLIENT_ID
+
 export const GoogleLoginButton = () => {
-  const { clientId } = getConfig()
   const { handleSuccess } = useGoogleAuthentication()
 
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const onFailure = (res: any) => {
     console.log('GoogleLoginButton onFailure', res)
@@ -25,19 +28,20 @@ export const GoogleLoginButton = () => {
       )
 
       history.push('/')
-    } catch (error) {
-      console.error(error)
+    } catch (errorMessage) {
+      setError(errorMessage)
     }
   }
 
   const onRequest = () => setLoading(true)
 
-  if (loading) return <div>Loading</div>
+  if (loading) return <Loader />
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <GoogleLogin
-        clientId={clientId}
+        className="mb-4 w-40"
+        clientId={CLIENT_ID}
         buttonText="Login with google"
         onSuccess={response => onSuccess(response)}
         onFailure={onFailure}
@@ -46,13 +50,12 @@ export const GoogleLoginButton = () => {
         uxMode="redirect"
         onRequest={onRequest}
       />
+      {error ? <Alert message={`${error}`} type="error" /> : null}
     </div>
   )
 }
 
 export const GoogleLogoutButton = () => {
-  const { clientId } = getConfig()
-
   const onSuccess = () => {
     console.log('🚀 ~> Logout')
     // TODO some alert
@@ -61,7 +64,7 @@ export const GoogleLogoutButton = () => {
   return (
     <div>
       <GoogleLogout
-        clientId={clientId}
+        clientId={CLIENT_ID}
         buttonText="Logout"
         onLogoutSuccess={onSuccess}
       />

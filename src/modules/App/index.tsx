@@ -5,16 +5,17 @@ import { AuthProvider } from '../Auth/AuthProvider'
 import { Navbar } from './Navbar'
 
 import { gapi } from 'gapi-script'
-import { getConfig } from '../../config'
 
 const { Header, Footer, Content } = Layout
 
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_AUTH0_CLIENT_ID
+
+
 const App = () => {
-  const { clientId } = getConfig()
   useEffect(() => {
     function start() {
       gapi.client.init({
-        clientId,
+        clientId: CLIENT_ID,
         scope: ['https://www.googleapis.com/auth/drive.metadata.readonly'],
       })
     }
