@@ -23,7 +23,7 @@ function useGoogleAuthentication() {
         return data
       } catch (error: any) {
         console.error('useGoogleAuthentication handleSuccess:', error)
-        throw new Error(error)
+        return Promise.reject(error.response.data.message)
       }
     }
   }

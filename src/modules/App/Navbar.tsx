@@ -4,9 +4,10 @@ import { Button } from 'antd'
 import { useAuth } from '../../shared/useAuth'
 import { ROUTES } from './routes'
 
-const UserNavbar = ({ dashboardLink, onLogout }: any) => {
+const UserNavbar = ({ dashboardLink }: any) => {
   const {
     loggedIn: { user },
+    onLogout,
   }: any = useAuth()
 
   const name =
@@ -40,13 +41,13 @@ const UserNavbar = ({ dashboardLink, onLogout }: any) => {
 }
 
 export const Navbar = () => {
-  const { loggedIn, onLogout }: any = useAuth()
+  const { loggedIn }: any = useAuth()
 
   return (
     <nav className="text-white">
       {loggedIn ? (
         <UserNavbar
-          {...{ dashboardLink: loggedIn?.user?.username === 'admin', onLogout }}
+          {...{ dashboardLink: loggedIn?.user?.username === 'admin' }}
         />
       ) : (
         <>

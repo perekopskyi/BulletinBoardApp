@@ -1,70 +1,45 @@
 import React, { useState } from 'react'
-import { GoogleLogin, GoogleLogout } from 'react-google-login'
-import { getConfig } from '../../config'
-import { LOCAL_STORAGE } from '../../shared/constants'
-import history from '../../shared/history'
+import { useNavigate } from 'react-router-dom'
+import { GoogleLogin } from 'react-google-login'
+import { Alert } from 'antd'
+import { Loader } from '../../components/Loader'
+import { CLIENT_ID, LOCAL_STORAGE } from '../../shared/constants'
 import useGoogleAuthentication from '../Auth/useGoogleAuth'
 
 export const GoogleLoginButton = () => {
-  const { clientId } = getConfig()
   const { handleSuccess } = useGoogleAuthentication()
-
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-
-  const onFailure = (res: any) => {
-    console.log('GoogleLoginButton onFailure', res)
-  }
+  const [error, setError] = useState(null)
 
   const onSuccess = async (response: any) => {
     try {
-      const data = await handleSuccess(response)
-      console.log('GoogleLoginButton ~> onSuccess', { data })
-      localStorage.setItem(
-        LOCAL_STORAGE.loggedIn,
-        JSON.stringify({ user: data.user })
-      )
-
-      history.push('/')
-    } catch (error) {
-      console.error(error)
+      const { user } = await handleSuccess(response)
+      localStorage.setItem(LOCAL_STORAGE.loggedIn, JSON.stringify({ user }))
+      navigate('/')
+    } catch (errorMessage) {
+      setError(errorMessage)
     }
   }
 
-  const onRequest = () => setLoading(true)
-
-  if (loading) return <div>Loading</div>
+  if (loading) return <Loader />
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <GoogleLogin
-        clientId={clientId}
+        className="mb-4 w-40"
+        clientId={CLIENT_ID}
         buttonText="Login with google"
         onSuccess={response => onSuccess(response)}
-        onFailure={onFailure}
+        onFailure={(error: any) =>
+          console.log('GoogleLoginButton onFailure', error)
+        }
         cookiePolicy="single_host_origin"
         isSignedIn={true}
         uxMode="redirect"
-        onRequest={onRequest}
+        onRequest={() => setLoading(true)}
       />
-    </div>
-  )
-}
-
-export const GoogleLogoutButton = () => {
-  const { clientId } = getConfig()
-
-  const onSuccess = () => {
-    console.log('🚀 ~> Logout')
-    // TODO some alert
-  }
-
-  return (
-    <div>
-      <GoogleLogout
-        clientId={clientId}
-        buttonText="Logout"
-        onLogoutSuccess={onSuccess}
-      />
+      {error ? <Alert message={`${error}`} type="error" /> : null}
     </div>
   )
 }

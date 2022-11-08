@@ -5,21 +5,20 @@ import { AuthProvider } from '../Auth/AuthProvider'
 import { Navbar } from './Navbar'
 
 import { gapi } from 'gapi-script'
-import { getConfig } from '../../config'
 
 const { Header, Footer, Content } = Layout
 
-const App = () => {
-  const { clientId } = getConfig()
-  useEffect(() => {
-    function start() {
-      gapi.client.init({
-        clientId,
-        scope: ['https://www.googleapis.com/auth/drive.metadata.readonly'],
-      })
-    }
+const gapiInit = () =>
+  gapi.load('client:auth2', () => {
+    gapi.client.init({
+      clientId: process.env.REACT_APP_GOOGLE_AUTH0_CLIENT_ID,
+      scope: ['https://www.googleapis.com/auth/drive.metadata.readonly'],
+    })
+  })
 
-    gapi.load('client:auth2', start)
+const App = () => {
+  useEffect(() => {
+    gapiInit()
   })
 
   return (
