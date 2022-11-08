@@ -1,39 +1,26 @@
-import { Alert } from 'antd'
 import React, { useState } from 'react'
-import { GoogleLogin, GoogleLogout } from 'react-google-login'
+import { useNavigate } from 'react-router-dom'
+import { GoogleLogin } from 'react-google-login'
+import { Alert } from 'antd'
 import { Loader } from '../../components/Loader'
-import { LOCAL_STORAGE } from '../../shared/constants'
-import history from '../../shared/history'
+import { CLIENT_ID, LOCAL_STORAGE } from '../../shared/constants'
 import useGoogleAuthentication from '../Auth/useGoogleAuth'
-
-const CLIENT_ID = process.env.REACT_APP_GOOGLE_AUTH0_CLIENT_ID
 
 export const GoogleLoginButton = () => {
   const { handleSuccess } = useGoogleAuthentication()
-
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const onFailure = (res: any) => {
-    console.log('GoogleLoginButton onFailure', res)
-  }
-
   const onSuccess = async (response: any) => {
     try {
-      const data = await handleSuccess(response)
-      console.log('GoogleLoginButton ~> onSuccess', { data })
-      localStorage.setItem(
-        LOCAL_STORAGE.loggedIn,
-        JSON.stringify({ user: data.user })
-      )
-
-      history.push('/')
+      const { user } = await handleSuccess(response)
+      localStorage.setItem(LOCAL_STORAGE.loggedIn, JSON.stringify({ user }))
+      navigate('/')
     } catch (errorMessage) {
       setError(errorMessage)
     }
   }
-
-  const onRequest = () => setLoading(true)
 
   if (loading) return <Loader />
 
@@ -44,30 +31,15 @@ export const GoogleLoginButton = () => {
         clientId={CLIENT_ID}
         buttonText="Login with google"
         onSuccess={response => onSuccess(response)}
-        onFailure={onFailure}
+        onFailure={(error: any) =>
+          console.log('GoogleLoginButton onFailure', error)
+        }
         cookiePolicy="single_host_origin"
         isSignedIn={true}
         uxMode="redirect"
-        onRequest={onRequest}
+        onRequest={() => setLoading(true)}
       />
       {error ? <Alert message={`${error}`} type="error" /> : null}
-    </div>
-  )
-}
-
-export const GoogleLogoutButton = () => {
-  const onSuccess = () => {
-    console.log('🚀 ~> Logout')
-    // TODO some alert
-  }
-
-  return (
-    <div>
-      <GoogleLogout
-        clientId={CLIENT_ID}
-        buttonText="Logout"
-        onLogoutSuccess={onSuccess}
-      />
     </div>
   )
 }
