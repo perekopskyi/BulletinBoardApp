@@ -1,10 +1,13 @@
-FROM node:16.15.0-stretch-slim
+FROM node:14-alpine 
 
 WORKDIR /app
 
-COPY . /app
+COPY package*.json ./
 
-RUN yarn install \
-  && yarn build
+RUN yarn install
+
+COPY . .
+
+EXPOSE 3030
 
 CMD [ "yarn", "start"]
